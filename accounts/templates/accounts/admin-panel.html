@@ -1,0 +1,109 @@
+{% extends 'page/base.html' %}
+{% load static %}
+
+{% block content %}
+
+{% if 'admin' in user.groups.all|join:',' %}
+
+<div class="buttons">
+    <div class="btn">
+        <button id="btn">Autorzy</button>
+    </div>
+</div>
+
+<div id="books">
+    <div class="name">
+        <h3>Dodane książki przez użytkowników </h3>
+    </div>
+    <div class="books">
+        {% for book in books %}
+        <a href="{{ book.get_absolute_url }}" class="link">
+            <div class="book">
+                <div class="img">
+                    {% if book.cover_image %}
+                    <img src="{{ book.cover_image.url }}" alt="{{ book.title }}" style="max-width: 125px;">
+                    {% else %}
+                    <img src="{% static 'images/cover_image.jpg' %}" alt="{{ book.title }}" style="max-width: 125px;">
+                    {% endif %}
+                </div>
+                <div class="txt">
+                    <div class="title">
+                        <h3>{{ book.title }}</h3>
+                        <h6 class="subtitle">
+                            {% if book.subtitle %}
+                            {{ book.subtitle }}
+                            {% endif %}
+                        </h6>
+                    </div>
+                    <div class="author">
+                        <hr>
+                        <h6 class="subtitle">{{ book.author }}</h6>
+                    </div>
+                </div>
+            </div>
+        </a>
+        {% endfor %}
+    </div>
+</div>
+<div id="authors">
+    <div class="name">
+        <h3>Dodani autorzy przez użytkowników </h3>
+    </div>
+    <div class="books">
+        {% for author in authors %}
+        <a href="{{ author.get_absolute_url }}" class="link">
+            <div class="book">
+                <div class="img img-author">
+                    {% if author.image %}
+                    <img src="{{ author.image.url }}" alt="{{ author }}" style="max-width: 140px;">
+                    {% else %}
+                    <img src="{% static 'images/author_icon.png' %}" alt="{{ book.title }}" style="max-width: 140px;">
+                    {% endif %}
+                </div>
+                <div class="txt">
+                    <div class="author">
+                        <h4>{{ author }}</h4>
+                    </div>
+                </div>
+            </div>
+        </a>
+        {% endfor %}
+    </div>
+</div>
+{% else %}
+<script>
+    window.location.href = "{% url 'book-list' %}";
+</script>
+{% endif %}
+
+<script>
+
+    const books = document.getElementById('books');
+    const authors = document.getElementById('authors');
+
+    const btn = document.getElementById('btn');
+
+    books.style.display = 'block'
+    authors.style.display = 'none'
+
+    function toggleMenu() {
+        const books_display = window.getComputedStyle(books).display;
+        const authors_display = window.getComputedStyle(authors).display;
+        if (books_display === 'block' && authors_display === 'none') {
+            books.style.display = 'none';
+            authors.style.display = 'block';
+            btn.textContent = 'Książki'
+        }
+
+        else if (books_display === 'none' && authors_display === 'block') {
+            books.style.display = 'block';
+            authors.style.display = 'none';
+            btn.textContent = 'Autorzy'
+        }
+    }
+
+    btn.addEventListener('click', toggleMenu);
+
+</script>
+
+{% endblock %}

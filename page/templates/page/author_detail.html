@@ -1,0 +1,187 @@
+{% extends 'page/base.html' %}
+{% load static %}
+{% load custom_filters %}
+{% block content %}
+<div class="detail">
+    {% if author.is_template == True %}
+    <div class="message" id="message">
+        <h4>Autor został dodany i teraz oczekuje na akceptację przez
+            administratora.</h4>
+    </div>
+    {% endif %}
+    <div class="book-view">
+        <!-- acoprswozklscmdaozbbaczomoprsaefgzzzooabcdeoo -->
+        <div class="book-info">
+            <div class="img">
+                {% if author.image %}
+                <img class="img-border" src="{{ author.image.url }}" alt="{{ author }}" style="max-width: 250px;">
+                {% else %}
+                <img class="img-border" src="{% static 'images/author_icon.png' %}" alt="{{ book.title }}"
+                    style="max-width: 250px;">
+                {% endif %}
+            </div>
+
+            <div class="txt">
+                <div class="box">
+                    <h2>{{ author }}</h2>
+                </div>
+
+                <div class="rating-system">
+                    <div class="stars">
+                        {% for _ in average_rating|full_stars %}
+                        <img src="{% static 'images/star_full.png' %}" alt="Full Star" style="max-width: 25px;">
+                        {% endfor %}
+                        {% if average_rating|half_star %}
+                        <img src="{% static 'images/star_half.png' %}" alt="Half Star" style="max-width: 25px;">
+                        {% endif %}
+                        {% for _ in average_rating|empty_stars %}
+                        <img src="{% static 'images/star_empty.png' %}" alt="Empty Star" style="max-width: 25px;">
+                        {% endfor %}
+                    </div>
+                    <div class="number">
+                        {% if average_rating != 0 %}
+                        <span>{{ average_rating }}</span>
+                        {% else %}
+                        <span>Brak ocen</span>
+                        {% endif %}
+                    </div>
+
+                </div>
+
+                <div class="box">
+                    <h4>Data urodzenia:</h4>
+                    {% if author.birth_date %}
+                    <h4>{{ author.birth_date }}</h4>
+                    {% else %}
+                    <h4>Brak danych</h4>
+                    {% endif %}
+                </div>
+
+                <div class="is_read">
+                    {% if author.is_template == False %}
+                    {% if user.is_authenticated %}
+                    <form method="post">
+                        {% csrf_token %}
+                        {{ form.as_p }}
+                        <input type="hidden" name="form_status_submit" value="1">
+                        <button type="submit">Zapisz</button>
+                    </form>
+                    {% endif %}
+                    {% endif %}
+                </div>
+            </div>
+
+        </div>
+
+
+        <hr class="hr-text" data-content="Opis">
+
+        <div class="book-description">
+            <span>{{ author.description }}</span> <br /> <br />
+        </div>
+
+
+        {% if author.is_template == True and 'admin' in user.groups.all|join:',' %}
+        <hr class="hr-different">
+        <div class="is_template">
+            <form method="post">
+                {% csrf_token %}
+                {{ form_add.as_p }}
+                <input type="hidden" name="form_add_submit" value="1">
+                <p>Zmiana spowoduje autoryzację autora</p>
+            </form>
+
+            <form action="{% url 'delete-author' author.pk %}" method="post" class="delete-form">
+                {% csrf_token %}
+                <button type="submit" onclick="return confirm('Czy na pewno chcesz usunąć tego autora?')">
+                    Usuń autora
+                </button> <br>
+                <p>Usuń autora z bazy danych</p>
+            </form>
+        </div>
+        {% else %}
+
+        <hr class="hr-text" data-content="Lista książek tego autora ({{ books|length }})">
+        <div class="books">
+            {% for book in books %}
+            <a href="{{ book.get_absolute_url }}" class="link">
+                <div class="book">
+                    <div class="img">
+                        {% if book.cover_image %}
+                        <img src="{{ book.cover_image.url }}" alt="{{ book.title }}" style="max-width: 125px;">
+                        {% else %}
+                        <img src="{% static 'images/cover_image.jpg' %}" alt="{{ book.title }}"
+                            style="max-width: 125px;">
+                        {% endif %}
+                    </div>
+                    <div class="txt">
+                        <div class="title">
+                            <h3>{{ book.title }}</h3>
+                            <h6 class="subtitle">
+                                {% if book.subtitle %}
+                                {{ book.subtitle }}
+                                {% endif %}
+                            </h6>
+                        </div>
+                        <div class="rating">
+                            <img src="{% static 'images/star_full.png' %}" alt="star.png" style="max-width: 15px;">
+                            {% if book.average_rating != 0 %}
+                            <span>{{ book.average_rating }}</span>
+                            {% else %}
+                            <span>Brak ocen</span>
+                            {% endif %}
+
+                        </div>
+                        <div class="author">
+                            <hr>
+                            <h6>{{ book.author }}</h6>
+                        </div>
+                    </div>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+        {% if author.is_template != True %}
+        <hr class="hr-text" data-content="Podobni autorzy">
+        <div class="books">
+            {% for a in all_authors %}
+            {% if a != author %}
+            {% if a.get_most_common_category == author.get_most_common_category %}
+            <a href="{{ a.get_absolute_url }}" class="link">
+                <div class="book">
+                    <div class="img img-author">
+                        {% if author.image %}
+                        <img src="{{ a.image.url }}" alt="{{ a }}" style="max-width: 140px;">
+                        {% else %}
+                        <img src="{% static 'images/author_icon.png' %}" alt="" style="max-width: 140px;">
+                        {% endif %}
+                    </div>
+                    <div class="txt">
+                        <div class="author">
+                            <h4>{{ a }}</h4>
+                        </div>
+                        <div class="follows" title="Ilość obserwacji: ">
+                            <img src="{% static 'images/heart.png' %}" alt="heart.png" style="max-width: 15px;">
+                            {{ author.follow_count }}
+                        </div>
+                    </div>
+
+
+                </div>
+            </a>
+            {% endif %}
+            {% endif %}
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% endif %}
+    </div>
+
+    <script>
+        const message = document.getElementById('message');
+        setTimeout(function () {
+            message.style.display = 'none'
+        }, 3000);
+    </script>
+
+    {% endblock %}

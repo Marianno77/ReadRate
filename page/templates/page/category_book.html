@@ -1,0 +1,59 @@
+{% extends 'page/base.html' %}
+{% load static %}
+{% load custom_filters %}
+{% block content %}
+
+<form method="get">
+    {{ form.as_p }}
+</form>
+<hr class="hr-text"
+    data-content="{{ selected_category }} {% if query %}'{{ query }}'{% endif %} ({{books.all|length}})">
+<div class="books">
+
+
+
+    {% if books.all|length == 0 %}
+    <h4>Brak takich książek</h4>
+    {% else %}
+    {% for book in books %}
+    <a href="{{ book.get_absolute_url }}" class="link">
+        <div class="book">
+            <div class="img">
+                {% if book.cover_image %}
+                <img src="{{ book.cover_image.url }}" alt="{{ book.title }}" style="max-width: 125px;">
+                {% else %}
+                <img src="{% static 'images/cover_image.jpg' %}" alt="{{ book.title }}" style="max-width: 125px;">
+                {% endif %}
+            </div>
+            <div class="txt">
+                <div class="title">
+                    <h3>{{ book.title }}</h3>
+                    <h6 class="subtitle">
+                        {% if book.subtitle %}
+                        {{ book.subtitle }}
+                        {% endif %}
+                    </h6>
+                </div>
+                <div class="rating">
+                    <img src="{% static 'images/star_full.png' %}" alt="star.png" style="max-width: 15px;">
+                    {% if book.average_rating != 0 %}
+                    <span>{{ book.average_rating }}</span>
+                    {% else %}
+                    <span>Brak ocen</span>
+                    {% endif %}
+
+                </div>
+                <div class="author">
+                    <hr>
+                    <h6>{{ book.author }}</h6>
+                </div>
+            </div>
+
+
+        </div>
+    </a>
+    {% endfor %}
+    {% endif %}
+</div>
+
+{% endblock %}

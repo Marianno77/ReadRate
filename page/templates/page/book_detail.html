@@ -1,0 +1,194 @@
+{% extends 'page/base.html' %}
+{% load static %}
+{% load custom_filters %}
+{% block content %}
+
+<div class="detail">
+    {% if book.is_template == True %}
+    <div class="message" id="message">
+        <h4>Twoja książka została dodana i teraz oczekuje na akceptację przez
+            administratora.</h4>
+    </div>
+    {% endif %}
+    <div class="book-view">
+        <!-- acoprswozklscmdaozbbaczomoprsaefgzzzooabcdeoo -->
+        <div class="book-info">
+            <div class="img">
+                {% if book.cover_image %}
+                <img class="img-border" src="{{ book.cover_image.url }}" alt="{{ book.title }}"
+                    style="max-width: 250px;">
+                {% else %}
+                <img class="img-border" src="{% static 'images/cover_image.jpg' %}" alt="{{ book.title }}"
+                    style="max-width: 250px;">
+                {% endif %}
+
+            </div>
+            <div class="txt">
+                <div class="box">
+                    <h2>{{ book.title }}</h2>
+                    {% if book.subtitle %}
+                    <h4>{{ book.subtitle }}</h4>
+                    {% endif %}
+                </div>
+
+                <div class="rating-system">
+                    <div class="stars">
+                        {% for _ in book.average_rating|full_stars %}
+                        <img src="{% static 'images/star_full.png' %}" alt="Full Star" style="max-width: 25px;">
+                        {% endfor %}
+                        {% if book.average_rating|half_star %}
+                        <img src="{% static 'images/star_half.png' %}" alt="Empty Star" style="max-width: 25px;">
+                        {% endif %}
+                        {% for _ in book.average_rating|empty_stars %}
+                        <img src="{% static 'images/star_empty.png' %}" alt="Empty Star" style="max-width: 25px;">
+                        {% endfor %}
+                    </div>
+                    <div class="number">
+                        {% if book.average_rating != 0 %}
+                        <span>{{ book.average_rating }}</span>
+                        {% else %}
+                        <span>Brak ocen</span>
+                        {% endif %}
+                    </div>
+
+                </div>
+
+                <div class="box">
+                    <a href="{{ book.author.get_absolute_url }}">
+                        <h3>{{ book.author }}</h3>
+                    </a>
+                </div>
+                {% if book.is_template == True %}
+                {% else %}
+                <div class="is_read">
+                    {% if user.is_authenticated %}
+                    <form method="post">
+                        {% csrf_token %}
+                        {{ form.as_p }}
+                        <input type="hidden" name="form_status_submit" value="1">
+                    </form>
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
+
+        </div>
+
+        <hr class="hr-text" data-content="Opis">
+
+        <div class="book-description">
+            {{ book.description }} <br><br>
+            <span> Kategoria: <a href="{% url 'category-book' book.category %}">{{ book.category }}</a></span>
+        </div>
+
+        <hr class="hr-different">
+    </div>
+    {% if book.is_template == True and 'admin' in user.groups.all|join:',' %}
+    {% if book.author in authors %}
+    <div class="is_template">
+        <form method="post">
+            <p>Autor nie został jeszcze zatwierdzony</p>
+            <a href="{% url 'accounts:admin-panel' %}">Powrót</a>
+        </form>
+    </div>
+    {% else %}
+    <div class="is_template">
+        <form method="post">
+            {% csrf_token %}
+            {{ form_add.as_p }}
+            <input type="hidden" name="form_add_submit" value="1">
+            <p>Zmiana spowoduje autoryzację ksiązki</p>
+        </form>
+
+        <form action="{% url 'delete-book' book.pk %}" method="post" class="delete-form">
+            {% csrf_token %}
+            <button type="submit" onclick="return confirm('Czy na pewno chcesz usunąć tę książkę?')">
+                Usuń książkę
+            </button> <br>
+            <p>Usuń ksiązkę z bazy danych</p>
+        </form>
+    </div>
+    {% endif %}
+
+    {% else %}
+    {% if book.is_template != True %}
+    <div class="reviews">
+        <div class="reviews-header">
+            <div class="title">
+                <h2>Recenzje ({{ book.reviews.all|length }}):</h2>
+            </div>
+            {% if user.is_authenticated %}
+            <div class="plus">
+                <a href="{% url 'add-review' book.id %}" title="Dodaj nową recenzje">
+                    <span>Dodaj nową recenzje</span>
+                    <img src="{% static 'images/plus.png' %}" alt="Dodaj nową recenzje" style="max-width: 25px">
+                </a>
+            </div>
+            {% endif %}
+        </div>
+
+        {% for review in book.reviews.all %}
+        <div class=" review">
+            <div class="user-and-rating">
+                <div class="user">
+                    <h3>{{ review.user }}</h3>
+                </div>
+                <div class="stars" title="{{review.rating}}">
+                    {% for _ in review.rating|full_stars %}
+                    <img src="{% static 'images/star_full.png' %}" alt="Full Star" style="max-width: 25px;">
+                    {% endfor %}
+                    {% for _ in review.rating|empty_stars %}
+                    <img src="{% static 'images/star_empty.png' %}" alt="Empty Star" style="max-width: 25px;">
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="txt">
+                <span>{{ review.review_text }}</span>
+            </div>
+            <div class="date">
+                {{ review.created_date}}
+            </div>
+            {% if user == review.user %}
+            <div class="edit">
+                <a href="{% url 'edit-review' book.id review.id %}">
+                    <button class="btn-edit">
+                        <div class="box">
+                            <img src="{% static 'images/edit.png' %}" alt="edit.png" style="max-width: 20px;">
+                        </div>
+                        <div class="box">
+                            Edytuj recenzje
+                        </div>
+                    </button>
+                </a>
+                <form action="{% url 'delete-review' review.pk %}" method="post">
+                    {% csrf_token %}
+                    <button class="btn-edit delete-btn"
+                        onclick="return confirm('Czy na pewno chcesz usunąć tę recenzję?')">
+                        <div class="box">
+                            <img src="{% static 'images/delete.png' %}" alt="edit.png" style="max-width: 20px;">
+                        </div>
+                        <div class="box">
+                            Usuń
+                        </div>
+                    </button>
+                </form>
+
+
+            </div>
+            {% endif %}
+            <hr>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    {% endif %}
+</div>
+
+<script>
+    const message = document.getElementById('message');
+    setTimeout(function () {
+        message.style.display = 'none'
+    }, 3000);
+</script>
+
+{% endblock %}

@@ -1,0 +1,38 @@
+{% extends 'page/base.html' %}
+{% load static %}
+
+{% block content %}
+
+<div class="forms">
+    <div class="login">
+        <div class="form-header">
+            <h2>Logowanie</h2>
+        </div>
+        <div class="form">
+            <form method="POST">
+                {% csrf_token %}
+                {{ login_form.as_p }}
+                <div class="btn">
+                    <button type="submit" name="login_submit">Zaloguj</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="register">
+        <div class="form-header">
+            <h2>Rejestracja</h2>
+        </div>
+        <div class="form">
+            <form method="POST">
+                {% csrf_token %}
+                {{ register_form.as_p }}
+                <div class="btn">
+                    <button type="submit" name="register_submit">Zarejestruj</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+
+{% endblock %}

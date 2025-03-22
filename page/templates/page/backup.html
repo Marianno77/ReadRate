@@ -1,0 +1,113 @@
+{% extends 'page/base.html' %}
+{% load static %}
+{% load custom_filters %}
+{% block content %}
+
+<div class="detail">
+    <div class="book-view">
+        <!-- acoprswozklscmdaozbbaczomoprsaefgzzzooabcdeoo -->
+        <div class="book-info">
+            <div class="img">
+                {% if author.image %}
+                <img class="img-border" src="{{ author.image.url }}" alt="{{ author }}" style="max-width: 250px;">
+                {% else %}
+                <img class="img-border" src="{% static 'images/author_icon.png' %}" alt="{{ book.title }}"
+                    style="max-width: 250px;">
+                {% endif %}
+            </div>
+
+            <div class="txt">
+                <div class="box">
+                    <h2>{{ author }}</h2>
+                </div>
+
+                <div class="rating-system">
+                    <div class="stars">
+                        {% for _ in average_rating|full_stars %}
+                        <img src="{% static 'images/star_full.png' %}" alt="Full Star" style="max-width: 25px;">
+                        {% endfor %}
+                        {% if average_rating|half_star %}
+                        <img src="{% static 'images/star_half.png' %}" alt="Empty Star" style="max-width: 25px;">
+                        {% endif %}
+                        {% for _ in average_rating|empty_stars %}
+                        <img src="{% static 'images/star_empty.png' %}" alt="Empty Star" style="max-width: 25px;">
+                        {% endfor %}
+                    </div>
+                    <div class="number">
+                        {{ average_rating }}
+                    </div>
+
+                </div>
+
+                <div class="box">
+                    <h4>Data urodzenia:</h4>
+                    {% if author.birth_date %}
+                    <h4>{{ author.birth_date }}</h4>
+                    {% else %}
+                    <h4>Brak danych</h4>
+                    {% endif %}
+                </div>
+
+                <div class="is_read">
+                    {% if user.is_authenticated %}
+                    <form method="post">
+                        {% csrf_token %}
+                        {{ form.as_p }}
+                        <button type="submit">Zapisz</button>
+                    </form>
+                    {% endif %}
+                </div>
+            </div>
+
+        </div>
+
+
+        <hr>
+
+        <div class="book-description">
+            <span>{{ author.description }}</span> <br /> <br />
+        </div>
+
+        <hr>
+        <div class="books-and-similar">
+
+            <div class="book-list">
+                <h3>Lista książek tego autora ({{ books|length }})</h3>
+                <ul>
+                    {% for book in books %}
+
+                    <li>
+                        <h5>
+                            <a href="{{ book.get_absolute_url }}">{{ book }}</a>
+                            <div class="rating-book-list">
+                                {{ book.average_rating }}
+                                <img src="{% static 'images/star_full.png' %}" alt="star.png" style="max-width: 10px;">
+                            </div>
+                        </h5>
+                    </li>
+
+                    {% endfor %}
+                </ul>
+            </div>
+            <div class="similar">
+                <h3>Podobni autorzy</h3>
+                <ul>
+                    {% for a in all_authors %}
+                    {% if a != author %}
+                    {% if a.get_most_common_category == author.get_most_common_category %}
+                    <li>
+                        <a href="{{ a.get_absolute_url }}">
+                            {{ a }}
+                        </a>
+                    </li>
+                    {% endif %}
+                    {% endif %}
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}

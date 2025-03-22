@@ -1,0 +1,260 @@
+{% extends 'page/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="books">
+    <div class="user-panel">
+        {% if person.username == user.username %}
+        <h2>Witaj {{person.username}}!</h2>
+        <div class="reference">
+            <a href="#table-read" style="text-decoration: underline;">
+                <h5>Przeczytane ksiązki</h5>
+            </a>
+            <a href="#table-review" style="text-decoration: underline;">
+                <h5>Twoje recenzje</h5>
+            </a>
+            <a href="#follows" style="text-decoration: underline;">
+                <h5>Ulubieni autorzy</h5>
+            </a>
+            <a href="#data" style="text-decoration: underline;">
+                <h5>Twoje dane</h5>
+            </a>
+        </div>
+
+        <hr class="hr-text" data-content="Twoje przeczytane książki ({{ book_status.all|length }})">
+
+        <button onclick="toggleRead()" class="toggle" title="Pokaż/Ukryj">
+            <img id="read-hide-img" src="{% static 'images/hide.png' %}" alt="edit.png" style="max-width: 25px;">
+            <img id="read-show-img" src="{% static 'images/view.png' %}" alt="edit.png" style="max-width: 25px;">
+        </button>
+        <div id="table-read">
+            {% if book_status.all|length != 0 %}
+            <table>
+                <tr>
+                    <th>Autor</th>
+                    <th>Tytuł</th>
+                    <th>Ocena</th>
+                </tr>
+                {% for status in book_status %}
+                <tr>
+                    <td title="Kliknij aby odwiedźić stronę autora">
+                        <a href="{{ status.book.author.get_absolute_url }}">
+                            {{ status.book.author }}
+                        </a>
+                    </td>
+                    <td title="Kliknij aby odwiedźić stronę książki">
+                        <a href="{{ status.book.get_absolute_url }}">
+                            {{ status.book.title }}
+                            {% if status.book.subtitle %}
+
+                            {{ status.book.subtitle }}
+
+                            {% endif %}
+
+                        </a>
+                    </td>
+                    <td class="td-rating" title="Kliknij aby zmienić ocenę">
+                        {% for review in rating %}
+
+                        {% if review.book == status.book %}
+                        <a href="{% url 'edit-review' review.book.id review.id %}">
+                            <img src="{% static 'images/star_full.png' %}" alt="star.png" style="max-width: 20px;">
+                            {{ review.rating }}
+                        </a>
+
+                        {% endif %}
+
+                        {% endfor %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </table>
+            {% else %}
+            <h4>Nie przeczytałeś jeszcze żadnej książki</h4>
+
+            {% endif %}
+        </div>
+
+        <hr class="hr-text" data-content="Twoje recenzje ({{ rating.all|length }})">
+        <button onclick="toggleReview()" class="toggle" title="Pokaż/Ukryj">
+            <img id="review-hide-img" src="{% static 'images/hide.png' %}" alt="edit.png" style="max-width: 25px;">
+            <img id="review-show-img" src="{% static 'images/view.png' %}" alt="edit.png" style="max-width: 25px;">
+        </button>
+        <div id="table-review">
+            {% if rating.all|length != 0 %}
+            <table>
+                <tr>
+                    <th>książka</th>
+                    <th>Opis</th>
+                    <th>Data</th>
+                </tr>
+                {% for review in reviews %}
+                <tr>
+                    <td title="Kliknij aby odwiedźić stronę książki">
+                        <a href="{{ review.book.get_absolute_url }}">
+                            {{ review.book.title }}
+                            {% if review.book.subtitle %}
+
+                            {{ review.book.subtitle }}
+
+                            {% endif %}
+
+                        </a>
+                    </td>
+                    <td title="Kliknij aby edytować">
+                        <a href="{% url 'edit-review' review.book.id review.id %}">
+                            {% if review.review_text|length > 10 %}
+                            {{ review.review_text|slice:'10' }}...
+                            {% else %}
+                            {{ review.review_text }}
+                            {% endif %}
+                        </a>
+                    </td>
+                    <td>
+                        {{ review.created_date }}
+                    </td>
+                </tr>
+                {% endfor %}
+            </table>
+            {% else %}
+            <h4>Nie dodałeś jeszcze żadnej recenzji</h4>
+            {% endif %}
+        </div>
+
+        <hr class="hr-text" data-content="Twoi ulubieni autorzy ({{ follows.all|length }})">
+        <div id="follows">
+            <div class="list">
+                <ul>
+                    {% for follow in follows %}
+                    <li>
+                        <a href="{{ follow.author.get_absolute_url }}">
+                            {{ follow.author }}
+                        </a>
+                    </li>
+                    {% endfor %}
+                    {% if follows.all|length == 0 %}
+                    <li style="list-style-type: none;">
+                        Nie obserwujesz jeszcze żadnych autorów
+                    </li>
+                    {% endif %}
+                </ul>
+
+            </div>
+        </div>
+        
+        <hr class="hr-text" data-content="Twoje dane">
+        <div class="list">
+            <div id="data">
+
+                <ul>
+                    <li>
+                        Nazwa: {{ person.username }}
+                    </li>
+                    {% if person.first_name %}
+                    <li>
+                        Imię: {{ person.first_name }}
+                    </li>
+                    {% endif %}
+                    {% if person.last_name %}
+                    <li>
+                        Nazwisko: {{ person.last_name }}
+                    </li>
+                    {% endif %}
+                    {% if person.email %}
+                    <li>
+                        Adres e-mail: {{ person.email }}
+                    </li>
+                    {% endif %}
+                    <li>
+                        Ranga:
+                        {% if 'admin' in person.groups.all|join:',' %}
+                        <a href="{% url 'accounts:admin-panel' %}" style="text-decoration: underline;">
+                            Admin
+                        </a>
+                        {% else %}
+                        Użytkownik
+                        {% endif %}
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <a href="{% url 'accounts:edit-user' %}">
+            <button class="btn-edit">
+                <div class="box">
+                    <img src="{% static 'images/edit.png' %}" alt="edit.png" style="max-width: 20px;">
+                </div>
+                <div class="box">
+                    Edytuj swoje dane
+                </div>
+            </button>
+        </a>
+
+        <hr class="hr-text">
+
+        {% if user.is_authenticated %}
+        <form method="post" action="{% url 'accounts:logout' %}">
+            {% csrf_token %}
+            <button type="submit">
+                <div class="box">
+                    <img src="{% static 'images/logout.png' %}" alt="edit.png" style="max-width: 20px;">
+                </div>
+                <div class="box">
+                    Wyloguj się
+                </div>
+            </button>
+        </form>
+        {% endif %}
+        {% else %}
+        <h2 style="color: red;">To nie twoje konto!</h2>
+        <script>
+            setTimeout(function () {
+                window.location.href = "{% url 'accounts:login-register' %}";
+            }, 1500);
+        </script>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+    const read = document.getElementById('table-read');
+    const review = document.getElementById('table-review');
+
+    const read_show_img = document.getElementById('read-show-img')
+    const read_hide_img = document.getElementById('read-hide-img')
+
+    const review_show_img = document.getElementById('review-show-img')
+    const review_hide_img = document.getElementById('review-hide-img')
+
+    function toggleRead() {
+        const currentDisplay = window.getComputedStyle(read).display;
+        console.log(currentDisplay)
+        if (currentDisplay == 'block') {
+            read.style.display = 'none';
+
+            read_show_img.style.display = 'block';
+            read_hide_img.style.display = 'none';
+        } else {
+            read.style.display = 'block';
+
+            read_show_img.style.display = 'none';
+            read_hide_img.style.display = 'block';
+        }
+    }
+
+    function toggleReview() {
+        const currentDisplay = window.getComputedStyle(review).display;
+        if (currentDisplay == 'block') {
+            review.style.display = 'none'
+
+            review_show_img.style.display = 'block';
+            review_hide_img.style.display = 'none';
+        } else {
+            review.style.display = 'block'
+
+            review_show_img.style.display = 'none';
+            review_hide_img.style.display = 'block';
+        }
+    }
+</script>
+
+{% endblock %}

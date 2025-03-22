@@ -1,0 +1,25 @@
+{% extends 'page/base.html' %}
+{% load static %}
+
+{% block content %}
+
+<div class="form-container">
+    <div class="form-header">
+        <h3>Edytuj swoje dane</h3>
+    </div>
+    {% if messages %}
+    {% for message in messages %}
+    <p style="color: red;">{{ message }}</p>
+    {% endfor %}
+    {% endif %}
+
+    <div class="form">
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button class="btn" type="submit">Zapisz zmiany</button>
+        </form>
+    </div>
+</div>
+
+{% endblock %}

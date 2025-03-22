@@ -1,0 +1,19 @@
+{% extends 'page/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="form-container">
+    <div class="form-header">
+        <h2>Dodaj nową książkę:</h2>
+    </div>
+    <div class="form">
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <div class="btn">
+                <button type="submit">Zapisz książkę</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

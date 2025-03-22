@@ -1,0 +1,13 @@
+{% extends 'page/base.html' %}
+{% load static %}
+
+{% block content %}
+
+<form method="post">
+    {% csrf_token %}
+    <p>Czy na pewno chcesz usunąć?</p>
+    <button type="submit">Tak, usuń</button>
+    <a href="{% url 'book-list' %}">Anuluj</a>
+</form>
+
+{% endblock %}

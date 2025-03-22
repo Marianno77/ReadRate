@@ -1,0 +1,40 @@
+{% extends 'page/base.html' %}
+{% load static %}
+
+{% block content %}
+
+<div class="form-container">
+    {% if edit == True and user != review.user %}
+    <script>
+        window.location.href = "{% url 'book-list' %}";
+    </script>
+    {% else %}
+    <div class="form-header">
+        <h2>Dodaj nową recenzje do książki:</h2>
+        <h4>
+            {{ book.title}}
+            {% if book.subtitle %}
+            - {{book.subtitle}}
+            {% endif %}
+        </h4>
+    </div>
+    <div class="form">
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <div class="btn">
+                <button type="submit">Zapisz recenzję</button>
+            </div>
+        </form>
+    </div>
+    <div class="back">
+        <a href="{{ book.get_absolute_url }}">
+            <img src="{% static 'images/back.png' %}" alt="Wróć do książki" style="max-width: 25px;">
+            <span>Wróć do książki</span>
+        </a>
+    </div>
+    {% endif %}
+</div>
+
+
+{% endblock %}

@@ -1,0 +1,240 @@
+{% extends 'page/base.html' %}
+{% load static %}
+
+{% block content %}
+
+
+<div class="baner">
+    <img src="{% static 'images/baner1.png' %}" alt="BANER" srcset="" id="b1">
+    <img src="{% static 'images/baner2.png' %}" alt="BANER" srcset="" id="b2">
+    <img src="{% static 'images/baner3.png' %}" alt="BANER" srcset="" id="b3">
+</div>
+
+<hr class="hr-text" data-content="Najlepsze książki">
+<div class="books">
+    {% for book in sorted_books %}
+    <a href="{{ book.get_absolute_url }}" class="link">
+        <div class="book">
+            <div class="img">
+                {% if book.cover_image %}
+                <img src="{{ book.cover_image.url }}" alt="{{ book.title }}" style="max-width: 125px;">
+                {% else %}
+                <img src="{% static 'images/cover_image.jpg' %}" alt="{{ book.title }}" style="max-width: 125px;">
+                {% endif %}
+            </div>
+            <div class="txt">
+                <div class="title">
+                    <h3>{{ book.title }}</h3>
+                    <h6 class="subtitle">
+                        {% if book.subtitle %}
+                        {{ book.subtitle }}
+                        {% endif %}
+                    </h6>
+                </div>
+                <div class="rating">
+                    <img src="{% static 'images/star_full.png' %}" alt="star.png" style="max-width: 15px;">
+                    {% if book.average_rating != 0 %}
+                    <span>{{ book.average_rating }}</span>
+                    {% else %}
+                    <span>Brak ocen</span>
+                    {% endif %}
+
+                </div>
+                <div class="author">
+                    <hr>
+                    <h6>{{ book.author }}</h6>
+                </div>
+            </div>
+        </div>
+    </a>
+    {% endfor %}
+
+    <a href="{% url 'all-book' %}">
+        <div class="more">
+            <img src="{% static 'images/book.png' %}" alt="" style="max-width: 30px;">
+            <h4>Odkryj więcej książek</h4>
+        </div>
+    </a>
+
+</div>
+
+<hr class="hr-text" data-content="Najlepsze horrory">
+
+<div class="books">
+    {% for book in horror_books %}
+    <a href="{{ book.get_absolute_url }}" class="link">
+        <div class="book">
+            <div class="img">
+                {% if book.cover_image %}
+                <img src="{{ book.cover_image.url }}" alt="{{ book.title }}" style="max-width: 125px;">
+                {% else %}
+                <img src="{% static 'images/cover_image.jpg' %}" alt="{{ book.title }}" style="max-width: 125px;">
+                {% endif %}
+            </div>
+            <div class="txt">
+                <div class="title">
+                    <h3>{{ book.title }}</h3>
+                    <h6 class="subtitle">
+                        {% if book.subtitle %}
+                        {{ book.subtitle }}
+                        {% endif %}
+                    </h6>
+                </div>
+                <div class="rating">
+                    <img src="{% static 'images/star_full.png' %}" alt="star.png" style="max-width: 15px;">
+                    {% if book.average_rating != 0 %}
+                    <span>{{ book.average_rating }}</span>
+                    {% else %}
+                    <span>Brak ocen</span>
+                    {% endif %}
+
+                </div>
+                <div class="author">
+                    <hr>
+                    <h6>{{ book.author }}</h6>
+                </div>
+            </div>
+        </div>
+    </a>
+    {% endfor %}
+
+    <a href="{% url 'category-book' 'Horror' %}">
+        <div class="more">
+            <img src="{% static 'images/ghost.png' %}" alt="" style="max-width: 30px;">
+            <h4>Odkryj więcej horrorów</h4>
+        </div>
+    </a>
+
+</div>
+
+<hr class="hr-text" data-content="Najlepsze fantasy">
+<div class="books">
+    {% for book in fantasy_books %}
+    <a href="{{ book.get_absolute_url }}" class="link">
+        <div class="book">
+            <div class="img">
+                {% if book.cover_image %}
+                <img src="{{ book.cover_image.url }}" alt="{{ book.title }}" style="max-width: 125px;">
+                {% else %}
+                <img src="{% static 'images/cover_image.jpg' %}" alt="{{ book.title }}" style="max-width: 125px;">
+                {% endif %}
+            </div>
+            <div class="txt">
+                <div class="title">
+                    <h3>{{ book.title }}</h3>
+                    <h6 class="subtitle">
+                        {% if book.subtitle %}
+                        {{ book.subtitle }}
+                        {% endif %}
+                    </h6>
+                </div>
+                <div class="rating">
+                    <img src="{% static 'images/star_full.png' %}" alt="star.png" style="max-width: 15px;">
+                    {% if book.average_rating != 0 %}
+                    <span>{{ book.average_rating }}</span>
+                    {% else %}
+                    <span>Brak ocen</span>
+                    {% endif %}
+
+                </div>
+                <div class="author">
+                    <hr>
+                    <h6>{{ book.author }}</h6>
+                </div>
+            </div>
+        </div>
+    </a>
+    {% endfor %}
+
+    <a href="{% url 'category-book' 'Fantastyka' %}">
+        <div class="more">
+            <img src="{% static 'images/dragon.png' %}" alt="" style="max-width: 30px;">
+            <h4>Odkryj więcej fantasy</h4>
+        </div>
+    </a>
+
+</div>
+
+<hr class="hr-text" data-content="Najpopularniejsi autorzy">
+<div class="books">
+    {% for author in best_authors %}
+    <a href="{{ author.get_absolute_url }}" class="link">
+        <div class="book">
+            <div class="img img-author">
+                {% if author.image %}
+                <img src="{{ author.image.url }}" alt="{{ author }}" style="max-width: 140px;">
+                {% else %}
+                <img src="{% static 'images/author_icon.png' %}" alt="{{ book.title }}" style="max-width: 140px;">
+                {% endif %}
+            </div>
+            <div class="txt">
+                <div class="author">
+                    <h4>{{ author }}</h4>
+                </div>
+
+                <div class="follows" title="Ilość obserwacji: ">
+                    <img src="{% static 'images/heart.png' %}" alt="heart.png" style="max-width: 15px;">
+                    {{ author.follow_count }}
+                </div>
+            </div>
+        </div>
+    </a>
+    {% endfor %}
+
+    <a href="{% url 'author-list' %}">
+        <div class="more">
+            <img src="{% static 'images/people.png' %}" alt="" style="max-width: 30px;">
+            <h4>Odkryj więcej autorów</h4>
+        </div>
+    </a>
+
+</div>
+
+<hr class="hr-text" data-content="Gatunki">
+<div class="books">
+    {% for book in category %}
+    {% for key, value in book.CATEGORY_CHOICES %}
+    <a href="{% url 'category-book' key %}" class="link">
+        <div class="book">
+            <div class="img-category">
+                <img src="{% static 'images/category.png' %}" alt="" style="max-width: 50px;">
+            </div>
+            <div class="txt" style="color: #000;">
+                <div class="box">
+                    <h3>{{ value }}</h3>
+                </div>
+            </div>
+        </div>
+    </a>
+    {% endfor %}
+    {% endfor %}
+</div>
+</div>
+
+<script>
+    console.log('start');
+    const b1 = document.getElementById('b1');
+    const b2 = document.getElementById('b2');
+    const b3 = document.getElementById('b3');
+
+    const baners = [b1, b2, b3];
+    let index = 0;
+
+    baners[index].classList.add('show');
+
+    setInterval(() => {
+        console.log('continue');
+        //baners.forEach(b => b.style.display = 'none');
+        //baners[index].style.display = 'block';
+
+        baners.forEach(b => b.classList.remove('show'));
+
+        index = (index + 1) % baners.length;
+
+        baners[index].classList.add('show');
+
+    }, 8000);
+    console.log('end');
+</script>
+
+{% endblock %}
