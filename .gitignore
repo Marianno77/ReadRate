@@ -1,6 +1,50 @@
+# Python
 *.pyc
-*~
-__pycache__
-venv
+*.pyo
+__pycache__/
+*.pyd
+*.db
+*.sqlite3
+*.log
+
+# Django
+*.log
+*.pot
+*.pyc
+*.pyo
+__pycache__/
+db.sqlite3
+media/
+
+# Virtual environment
+venv/
+ENV/
+env/
+.venv/
+
+# Pipenv
+Pipfile.lock
+
+# Django migrations
+migrations/
+
+
+# IDE
+.idea/
+.vscode/
+
+# MacOS
 .DS_Store
-.idea
+
+# Windows
+Thumbs.db
+
+# Jupyter Notebooks
+.ipynb_checkpoints/
+
+# Docker
+docker-compose.override.yml
+.dockerignore
+
+# Local settings
+.local_settings.py
